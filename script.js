@@ -43,7 +43,7 @@ function renderTasks() {
       const timerDisplay = document.createElement("div");
       timerDisplay.className = "task-info";
       timerDisplay.id = `timer-${task.id}`;
-      timerDisplay.textContent = formatTime(task.remainingTime || 1500); 
+      timerDisplay.textContent = formatTime(task.remainingTime); 
       doNowCard.appendChild(timerDisplay);
       doNow.appendChild(doNowCard);
     } else {
@@ -90,9 +90,8 @@ function startTimer(task) {
       task.status="done"; delete task.remainingTime;
       saveTasks();
       renderTasks();
-      alert(`Task "${task.name}" finished!`);
     }
-  },1000);
+  }, 1000);
 }
 
 
@@ -104,6 +103,7 @@ function editTask(id) {
     saveTasks();
     renderTasks(); }
 }
+
 function deleteTask(id) {
   clearInterval(timers[id]);
   tasks=tasks.filter(x=>x.id!==id);
@@ -118,7 +118,6 @@ document.getElementById("saveTaskBtn").onclick=()=>{
   const name=document.getElementById("taskName").value.trim();
   const due=document.getElementById("taskDue").value;
   const prio=document.getElementById("taskPriority").value;
-  if (!name) return alert("Enter a task name!");
   tasks.push({id:Date.now(), name, due, priority:prio, status:"not-started"});
   saveTasks();
   renderTasks();
@@ -134,7 +133,8 @@ const dropZone=document.getElementById("doNowDropZone");
 dropZone.addEventListener("dragover",e=>{ e.preventDefault(); dropZone.classList.add("drag-over"); });
 dropZone.addEventListener("dragleave",()=>dropZone.classList.remove("drag-over"));
 dropZone.addEventListener("drop",e => {
-  e.preventDefault(); dropZone.classList.remove("drag-over");
+  e.preventDefault();
+  dropZone.classList.remove("drag-over");
   if (dragTaskId) { updateStatus(dragTaskId,"in-progress"); dragTaskId=null; }
 });
 
