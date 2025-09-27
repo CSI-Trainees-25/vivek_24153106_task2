@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>Task Manager</h1>
+      <button id="addTaskBtn" class="task-btn">+ New Task</button>
+    </div>
+    <div id="newTaskPanel" class="new-task-panel hidden">
+      <div class="new-task-title">Add New Task</div>
+      <div class="form-row">
+        <label for="taskName">Task Name</label>
+        <input
+          id="taskName"
+          class="form-input"
+          type="text"
+          placeholder="Enter task name"
+        />
+      </div>
+      <div class="form-row">
+        <label for="taskDue">Due Date</label>
+        <input id="taskDue" class="form-input" type="date" />
+      </div>
+      <div class="form-row">
+        <label for="taskPriority">Priority</label>
+        <select id="taskPriority" class="form-select">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="new-task-actions">
+        <button id="cancelTaskBtn" class="btn btn-cancel">Cancel</button>
+        <button id="saveTaskBtn" class="btn btn-primary">Create</button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="left-column">
+        <h2>Tasks</h2>
+        <div id="taskList" class="task-container"></div>
+      </div>
+
+      <div class="right-column" id="doNowDropZone">
+        <h2>Do Now</h2>
+        <div id="doNow" class="task-container"></div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
