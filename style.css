@@ -1,5 +1,14 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+
+
+body { font-family: Arial, sans-serif;
+  background-color: #f5f5f5; }
+
+
+
+
+/*KEEP THINGS HIDDEN UNTIL YOU'RE READY TO SHOW EM🌟*/
+
 .hidden { display: none !important; }
 
 
@@ -46,6 +55,13 @@ body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
   cursor: grab;
 }
 .task-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+
+
+
+
+
+
+
 .task-info { font-size: 14px; margin-bottom: 8px; color: #666; }
 
 .edit-btn, .btn {
@@ -89,8 +105,9 @@ select {
 }
 .new-task-actions { display: flex; justify-content: flex-end; gap: 10px; }
 
+/*🌻DRAG WALA FEATURE🌻*/
 
 .drag-over {
-  background: #f0f9ff;
+  background: #bde5ff;
   border: 2px dashed #8b5cf6;
 }
