@@ -7,7 +7,8 @@ function saveTasks() { localStorage.setItem("tasks", JSON.stringify(tasks)); }
 function renderTasks() {
   const taskList = document.getElementById("taskList");
   const doNow = document.getElementById("doNow");
-  taskList.innerHTML = ""; doNow.innerHTML = "";
+  taskList.innerHTML = "";
+  doNow.innerHTML = "";
 
   tasks.forEach(task => {
     const card = document.createElement("div");
@@ -42,7 +43,7 @@ function renderTasks() {
       const timerDisplay = document.createElement("div");
       timerDisplay.className = "task-info";
       timerDisplay.id = `timer-${task.id}`;
-      timerDisplay.textContent = formatTime(task.remainingTime || 1500); // default 25 mins if missing
+      timerDisplay.textContent = formatTime(task.remainingTime || 1500); 
       doNowCard.appendChild(timerDisplay);
       doNow.appendChild(doNowCard);
     } else {
@@ -86,7 +87,8 @@ function startTimer(task) {
     } else {
       clearInterval(timers[task.id]);
       task.status="done"; delete task.remainingTime;
-      saveTasks(); renderTasks();
+      saveTasks();
+      renderTasks();
       alert(`Task "${task.name}" finished!`);
     }
   },1000);
@@ -96,12 +98,16 @@ function startTimer(task) {
 function editTask(id) {
   let t=tasks.find(x=>x.id===id);
   let newName=prompt("Edit name:",t.name);
-  if (newName) { t.name=newName; saveTasks(); renderTasks(); }
+  if (newName) { 
+    t.name=newName;
+    saveTasks();
+    renderTasks(); }
 }
 function deleteTask(id) {
   clearInterval(timers[id]);
   tasks=tasks.filter(x=>x.id!==id);
-  saveTasks(); renderTasks();
+  saveTasks();
+  renderTasks();
 }
 
 
@@ -125,7 +131,7 @@ function onDragEnd(e){ dragTaskId=null; }
 const dropZone=document.getElementById("doNowDropZone");
 dropZone.addEventListener("dragover",e=>{ e.preventDefault(); dropZone.classList.add("drag-over"); });
 dropZone.addEventListener("dragleave",()=>dropZone.classList.remove("drag-over"));
-dropZone.addEventListener("drop",e=>{
+dropZone.addEventListener("drop",e => {
   e.preventDefault(); dropZone.classList.remove("drag-over");
   if (dragTaskId) { updateStatus(dragTaskId,"in-progress"); dragTaskId=null; }
 });
