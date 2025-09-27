@@ -66,7 +66,8 @@ function updateStatus(id, val) {
     delete timers[t.id];
     delete t.remainingTime;
   }
-  saveTasks(); renderTasks();
+  saveTasks();
+  renderTasks();
 }
 
 function formatTime(sec) {
@@ -119,7 +120,8 @@ document.getElementById("saveTaskBtn").onclick=()=>{
   const prio=document.getElementById("taskPriority").value;
   if (!name) return alert("Enter a task name!");
   tasks.push({id:Date.now(), name, due, priority:prio, status:"not-started"});
-  saveTasks(); renderTasks();
+  saveTasks();
+  renderTasks();
   document.getElementById("newTaskPanel").classList.add("hidden");
   document.getElementById("taskName").value=""; document.getElementById("taskDue").value="";
   document.getElementById("taskPriority").value="medium";
