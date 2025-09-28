@@ -130,6 +130,16 @@ document.getElementById("saveTaskBtn").onclick=()=>{
 function onDragStart(e,id){ dragTaskId=id; }
 function onDragEnd(e){ dragTaskId=null; }
 const dropZone=document.getElementById("doNowDropZone");
+const dropZoneTask = document.getElementById("taskList");
+dropZoneTask.addEventListener("dragover", e=>{
+    e.preventDefault();
+    dropZoneTask.classList.add("drag-over");
+});
+dropZoneTask.addEventListener("dragleave", ()=>dropZoneTask.classList.remove("drag-over"));
+dropZoneTask.addEventListener("drop", e=>{
+    e.preventDefault();
+    //we have to code here now. but i have no fucking clue what to do...
+})
 dropZone.addEventListener("dragover",e=>{ e.preventDefault(); dropZone.classList.add("drag-over"); });
 dropZone.addEventListener("dragleave",()=>dropZone.classList.remove("drag-over"));
 dropZone.addEventListener("drop",e => {
