@@ -1,8 +1,14 @@
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let tasklist = JSON.parse(localStorage.getItem("tasklist")) || [];
+let donowlist = JSON.parse(localStorage.getItem("donowlist")) || [];
+let donelist = JSON.parse(localStorage.getItem("donelist")) || [];
 let dragTaskId = null;
 let timers = {};
 
-function saveTasks() { localStorage.setItem("tasks", JSON.stringify(tasks)); }
+function saveTasks() { 
+    localStorage.setItem("tasklist", JSON.stringify(tasklist));
+    localStorage.setItem("donowlist", JSON.stringify(donowlist));
+    localStorage.setItem("donelist", JSON.stringify(donelist));
+ }
 
 function renderTasks() {
   const taskList = document.getElementById("taskList");
@@ -10,7 +16,7 @@ function renderTasks() {
   taskList.innerHTML = "";
   doNow.innerHTML = "";
 
-  tasks.forEach(task => {
+  tasklist.forEach(task => {
     const card = document.createElement("div");
     card.className = "task-card";
     card.setAttribute("draggable", "true");
@@ -138,7 +144,7 @@ dropZoneTask.addEventListener("dragover", e=>{
 dropZoneTask.addEventListener("dragleave", ()=>dropZoneTask.classList.remove("drag-over"));
 dropZoneTask.addEventListener("drop", e=>{
     e.preventDefault();
-    //we have to code here now. but i have no fucking clue what to do...
+    
 })
 dropZone.addEventListener("dragover",e=>{ e.preventDefault(); dropZone.classList.add("drag-over"); });
 dropZone.addEventListener("dragleave",()=>dropZone.classList.remove("drag-over"));
