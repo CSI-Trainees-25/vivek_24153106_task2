@@ -1,14 +1,10 @@
 let tasklist = JSON.parse(localStorage.getItem("tasklist")) || [];
-let donowlist = JSON.parse(localStorage.getItem("donowlist")) || [];
-let donelist = JSON.parse(localStorage.getItem("donelist")) || [];
-let dragTaskId = null;
 let timers = {};
+let dragTaskId = null;
 
 function saveTasks() { 
     localStorage.setItem("tasklist", JSON.stringify(tasklist));
-    localStorage.setItem("donowlist", JSON.stringify(donowlist));
-    localStorage.setItem("donelist", JSON.stringify(donelist));
- }
+}
 
 function renderTasks() {
   const taskList = document.getElementById("taskList");
@@ -45,98 +41,113 @@ function renderTasks() {
     `;
 
     if (task.status === "in-progress") {
-      const doNowCard = card.cloneNode(true);
       const timerDisplay = document.createElement("div");
       timerDisplay.className = "task-info";
       timerDisplay.id = `timer-${task.id}`;
-      timerDisplay.textContent = formatTime(task.remainingTime); 
-      doNowCard.appendChild(timerDisplay);
-      doNow.appendChild(doNowCard);
-    } else {
+      timerDisplay.textContent = formatTime(task.remainingTime || 0); 
+      card.appendChild(timerDisplay);
+      doNow.appendChild(card);
+    } else if (task.status === "not-started") {
       taskList.appendChild(card);
     }
   });
 }
 
 function updatePriority(id, val) {
-  let t = tasks.find(x=>x.id===id); t.priority=val; saveTasks();
+  let t = tasklist.find(x=>x.id===id); 
+  if (t) {
+    t.priority = val; 
+    saveTasks();
+  }
 }
 
 function updateStatus(id, val) {
-  let t = tasks.find(x=>x.id===id); t.status=val;
+  let t = tasklist.find(x=>x.id===id); 
+  if (!t) return;
+  t.status = val;
+
   if (val==="in-progress") {
     if (!t.remainingTime) t.remainingTime = 1500; 
     startTimer(t);
   } else {
     clearInterval(timers[t.id]);
     delete timers[t.id];
-    delete t.remainingTime;
+    if (val!=="in-progress") delete t.remainingTime;
   }
+
   saveTasks();
   renderTasks();
 }
 
 function formatTime(sec) {
-  let h=String(Math.floor(sec/3600)).padStart(2,"0");
-  let m=String(Math.floor((sec%3600)/60)).padStart(2,"0");
-  let s=String(sec%60).padStart(2,"0");
+  let h = String(Math.floor(sec/3600)).padStart(2,"0");
+  let m = String(Math.floor((sec%3600)/60)).padStart(2,"0");
+  let s = String(sec%60).padStart(2,"0");
   return `${h}:${m}:${s}`;
 }
 
 function startTimer(task) {
   if (timers[task.id]) clearInterval(timers[task.id]);
   timers[task.id] = setInterval(()=>{
-    if (task.remainingTime>0) {
+    if (task.remainingTime > 0) {
       task.remainingTime--;
       let el=document.getElementById(`timer-${task.id}`);
-      if (el) el.textContent=formatTime(task.remainingTime);
+      if (el) el.textContent = formatTime(task.remainingTime);
       saveTasks();
     } else {
       clearInterval(timers[task.id]);
-      task.status="done"; delete task.remainingTime;
+      task.status="done"; 
+      delete task.remainingTime;
       saveTasks();
       renderTasks();
     }
   }, 1000);
 }
 
-
 function editTask(id) {
-  let t=tasks.find(x=>x.id===id);
-  let newName=prompt("Edit name:",t.name);
+  let t = tasklist.find(x=>x.id===id);
+  if (!t) return;
+  let newName = prompt("Edit name:", t.name);
   if (newName) { 
-    t.name=newName;
+    t.name = newName;
     saveTasks();
-    renderTasks(); }
+    renderTasks();
+  }
 }
 
 function deleteTask(id) {
   clearInterval(timers[id]);
-  tasks=tasks.filter(x=>x.id!==id);
+  tasklist = tasklist.filter(x=>x.id!==id);
   saveTasks();
   renderTasks();
 }
 
-
+// --- Add Task Panel ---
 document.getElementById("addTaskBtn").onclick=()=>document.getElementById("newTaskPanel").classList.remove("hidden");
 document.getElementById("cancelTaskBtn").onclick=()=>document.getElementById("newTaskPanel").classList.add("hidden");
 document.getElementById("saveTaskBtn").onclick=()=>{
   const name=document.getElementById("taskName").value.trim();
   const due=document.getElementById("taskDue").value;
   const prio=document.getElementById("taskPriority").value;
-  tasks.push({id:Date.now(), name, due, priority:prio, status:"not-started"});
-  saveTasks();
-  renderTasks();
-  document.getElementById("newTaskPanel").classList.add("hidden");
-  document.getElementById("taskName").value=""; document.getElementById("taskDue").value="";
-  document.getElementById("taskPriority").value="medium";
+  if (name) {
+    tasklist.push({id:Date.now(), name, due, priority:prio, status:"not-started"});
+    saveTasks();
+    renderTasks();
+    document.getElementById("newTaskPanel").classList.add("hidden");
+    document.getElementById("taskName").value=""; 
+    document.getElementById("taskDue").value="";
+    document.getElementById("taskPriority").value="medium";
+  }
 };
 
-
+// --- Drag & Drop ---
 function onDragStart(e,id){ dragTaskId=id; }
 function onDragEnd(e){ dragTaskId=null; }
-const dropZone=document.getElementById("doNowDropZone");
+
 const dropZoneTask = document.getElementById("taskList");
+const dropZoneDoNow = document.getElementById("doNow");
+
+// Tasks dropzone → move back to "not-started"
 dropZoneTask.addEventListener("dragover", e=>{
     e.preventDefault();
     dropZoneTask.classList.add("drag-over");
@@ -144,18 +155,32 @@ dropZoneTask.addEventListener("dragover", e=>{
 dropZoneTask.addEventListener("dragleave", ()=>dropZoneTask.classList.remove("drag-over"));
 dropZoneTask.addEventListener("drop", e=>{
     e.preventDefault();
-    
-})
-dropZone.addEventListener("dragover",e=>{ e.preventDefault(); dropZone.classList.add("drag-over"); });
-dropZone.addEventListener("dragleave",()=>dropZone.classList.remove("drag-over"));
-dropZone.addEventListener("drop",e => {
-  e.preventDefault();
-  dropZone.classList.remove("drag-over");
-  if (dragTaskId) { updateStatus(dragTaskId,"in-progress"); dragTaskId=null; }
+    dropZoneTask.classList.remove("drag-over");
+    if (dragTaskId) {
+      updateStatus(dragTaskId,"not-started");
+      dragTaskId=null;
+    }
 });
 
+// Do Now dropzone → move to "in-progress"
+dropZoneDoNow.addEventListener("dragover", e=>{
+    e.preventDefault();
+    dropZoneDoNow.classList.add("drag-over");
+});
+dropZoneDoNow.addEventListener("dragleave", ()=>dropZoneDoNow.classList.remove("drag-over"));
+dropZoneDoNow.addEventListener("drop", e => {
+  e.preventDefault();
+  dropZoneDoNow.classList.remove("drag-over");
+  if (dragTaskId) { 
+    updateStatus(dragTaskId,"in-progress"); 
+    dragTaskId=null; 
+  }
+});
 
+// --- Init ---
 window.onload=()=>{
   renderTasks();
-  tasks.forEach(t=>{ if (t.status==="in-progress" && t.remainingTime) startTimer(t); });
+  tasklist.forEach(t=>{ 
+    if (t.status==="in-progress" && t.remainingTime) startTimer(t); 
+  });
 };
